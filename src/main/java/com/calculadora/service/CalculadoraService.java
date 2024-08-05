@@ -32,7 +32,7 @@ public class CalculadoraService
 
 		while(numeroParcela < numeroParcelas){
 			LocalDate dataReferencia = null;
-			Boolean isPagamento = false;
+			boolean isPagamento = false;
 
 			if(dataCompetencia.plusMonths(1).isBefore(dataPagamento))
 			{
@@ -93,11 +93,19 @@ public class CalculadoraService
 
 		BigDecimal jurosProvisao = calcularJuros(ultimaData, dataCompetencia, taxaJuros, ultimoSaldoPrincipal, ultimoAcumulado);
 		BigDecimal jurosPagos = BigDecimal.ZERO;
+		BigDecimal valorParcelaAtual = valorParcela;
 
 		BigDecimal saldoPrincipalAtual = ultimoSaldoPrincipal;
 
 		if(isPagamento){
-			saldoPrincipalAtual = ultimoSaldoPrincipal.subtract(valorParcela);
+			BigDecimal auxiliar = ultimoSaldoPrincipal.subtract(valorParcelaAtual);
+			if(auxiliar.compareTo(BigDecimal.ZERO) < 0)
+			{
+				valorParcelaAtual = ultimoSaldoPrincipal;
+				saldoPrincipalAtual = BigDecimal.ZERO;
+			}else{
+				saldoPrincipalAtual = auxiliar;
+			}
 			jurosPagos = ultimoAcumulado.add(jurosProvisao);
 		}
 
@@ -110,8 +118,8 @@ public class CalculadoraService
 			BigDecimal.ZERO,
 			saldoDevedorAtual,
 			isPagamento ? numeroParcela + "/" + numeroParcelas : "",
-			isPagamento ? valorParcela.add(jurosPagos) : BigDecimal.ZERO,
-			isPagamento ? valorParcela : BigDecimal.ZERO,
+			isPagamento ? valorParcelaAtual.add(jurosPagos) : BigDecimal.ZERO,
+			isPagamento ? valorParcelaAtual : BigDecimal.ZERO,
 			saldoPrincipalAtual,
 			jurosProvisao,
 			jurosAcumulado,

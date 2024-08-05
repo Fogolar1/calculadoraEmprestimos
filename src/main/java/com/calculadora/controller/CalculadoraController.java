@@ -7,6 +7,7 @@ import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import com.calculadora.service.CalculadoraService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/calculadora")
+@CrossOrigin(origins = "*")
 public class CalculadoraController
 {
 
