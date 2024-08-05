@@ -22,7 +22,7 @@ public class CalculadoraService
 		List<ReportRowRecord> rows = new ArrayList<>();
 		rows.add(createFirstRow(reportDataRecord));
 
-		calcularParcelas(reportDataRecord.dataInicial(), reportDataRecord.dataFinal());
+		calcularParcelas(reportDataRecord.dataInicial(), reportDataRecord.dataFinal(), reportDataRecord.primeiroPagamento());
 		calcularValorParcela(reportDataRecord.valorTotal());
 
 		LocalDate dataCompetencia = reportDataRecord.dataInicial();
@@ -36,10 +36,16 @@ public class CalculadoraService
 
 			if(dataCompetencia.plusMonths(1).isBefore(dataPagamento))
 			{
-				if(dataCompetencia.getDayOfMonth() == dataCompetencia.lengthOfMonth())
+				if(dataCompetencia.getDayOfMonth() == dataCompetencia.lengthOfMonth()){
 					dataCompetencia = YearMonth.from(dataCompetencia).plusMonths(1).atEndOfMonth();
-				else
+				}
+				else{
 					dataCompetencia = dataCompetencia.withDayOfMonth(dataCompetencia.lengthOfMonth());
+					if(dataCompetencia.equals(reportDataRecord.dataFinal())){
+						isPagamento = true;
+						numeroParcela++;
+					}
+				}
 
 				dataReferencia = dataCompetencia;
 
@@ -59,9 +65,13 @@ public class CalculadoraService
 	}
 
 
-	private void calcularParcelas(LocalDate dataInicial, LocalDate dataFinal){
+	private void calcularParcelas(LocalDate dataInicial, LocalDate dataFinal, LocalDate dataPagamento){
 		Period period = Period.between(dataInicial, dataFinal);
 		numeroParcelas = period.toTotalMonths();
+		if(numeroParcelas == 0){
+			if(dataFinal.equals(dataPagamento)) numeroParcelas = 1;
+			else numeroParcelas = 2;
+		}
 	}
 
 	//AMORTIZAÇÃO CONSTANTE
